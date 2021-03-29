@@ -1,0 +1,29 @@
+name: "Test"
+
+on:
+  push:
+    branches: [ main ]
+    
+jobs:
+  build-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Set vars"
+        id: "version"
+        run: |
+          echo '::set-output name=version-changed::false'
+          echo '::set-output name=current-version::"1"'
+
+      - name: "Conditional step 1"
+        if: steps.version.outputs['version-changed'] || steps.version.outputs['current-version'] == '"1"'
+        run: echo "Conditional step 1 called"
+
+      - name: "Conditional step 2"
+        if: ${{ steps.version.outputs['version-changed'] || steps.version.outputs['current-version'] == '"1"' }}
+        run: echo "Conditional step 2 called"
+
+      - name: "Custom command"
+        uses: actions/hello-world-javascript-action@main
+        with:
+          param1: ${{ steps.version.outputs['version-changed'] || steps.version.outputs['current-version'] == '"1"' }}
+          param2: ${{ steps.version.outputs['version-changed'] == true || steps.version.outputs['current-version'] == '"1"' }}
